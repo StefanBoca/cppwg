@@ -22,10 +22,11 @@ class PackageInfoParser(object):
     ):
 
         is_string = isinstance(input_dict[option], str)
-        if is_string and input_dict[option].strip().upper() == off_string:
-            input_dict[option] = False
-        elif is_string and input_dict[option].strip().upper() == on_string:
-            input_dict[option] = True
+        if is_string:
+            if input_dict[option].strip().upper() == off_string:
+                input_dict[option] = False
+            elif input_dict[option].strip().upper() == on_string:
+                input_dict[option] = True
 
     def is_option_ALL(self, option, input_dict, check_string="CPPWG_ALL"):
 
@@ -75,7 +76,7 @@ class PackageInfoParser(object):
             "source_hpp_patterns": ["*.hpp"],
         }
         package_defaults.update(global_defaults)
-        for eachEntry in package_defaults.keys():
+        for eachEntry in package_defaults:
             if eachEntry in self.raw_info:
                 package_defaults[eachEntry] = self.raw_info[eachEntry]
         self.subsititute_bool_string("common_include_file", package_defaults)
@@ -98,7 +99,7 @@ class PackageInfoParser(object):
             }
             module_defaults.update(global_defaults)
 
-            for eachEntry in module_defaults.keys():
+            for eachEntry in module_defaults:
                 if eachEntry in eachModule:
                     module_defaults[eachEntry] = eachModule[eachEntry]
 
@@ -107,33 +108,37 @@ class PackageInfoParser(object):
             module_defaults["use_all_classes"] = self.is_option_ALL(
                 "classes", module_defaults
             )
-            if not module_defaults["use_all_classes"]:
-                if module_defaults["classes"] is not None:
-                    for eachClass in module_defaults["classes"]:
-                        class_defaults = {"name_override": None, "source_file": None}
-                        class_defaults.update(global_defaults)
+            if (
+                not module_defaults["use_all_classes"]
+                and module_defaults["classes"] is not None
+            ):
+                for eachClass in module_defaults["classes"]:
+                    class_defaults = {"name_override": None, "source_file": None}
+                    class_defaults.update(global_defaults)
 
-                        for eachEntry in class_defaults.keys():
-                            if eachEntry in eachClass:
-                                class_defaults[eachEntry] = eachClass[eachEntry]
-                        class_info = CppClassInfo(eachClass["name"], class_defaults)
-                        self.check_for_custom_generators(class_info)
-                        class_info_collection.append(class_info)
+                    for eachEntry in class_defaults:
+                        if eachEntry in eachClass:
+                            class_defaults[eachEntry] = eachClass[eachEntry]
+                    class_info = CppClassInfo(eachClass["name"], class_defaults)
+                    self.check_for_custom_generators(class_info)
+                    class_info_collection.append(class_info)
 
             # Do functions
             function_info_collection = []
             module_defaults["use_all_free_functions"] = self.is_option_ALL(
                 "free_functions", module_defaults
             )
-            if not module_defaults["use_all_free_functions"]:
-                if module_defaults["free_functions"] is not None:
-                    for _ in module_defaults["free_functions"]:
-                        ff_defaults = {"name_override": None, "source_file": None}
-                        ff_defaults.update(global_defaults)
-                        function_info = CppFreeFunctionInfo(
-                            ff_defaults["name"], ff_defaults
-                        )
-                        function_info_collection.append(function_info)
+            if (
+                not module_defaults["use_all_free_functions"]
+                and module_defaults["free_functions"] is not None
+            ):
+                for _ in module_defaults["free_functions"]:
+                    ff_defaults = {"name_override": None, "source_file": None}
+                    ff_defaults.update(global_defaults)
+                    function_info = CppFreeFunctionInfo(
+                        ff_defaults["name"], ff_defaults
+                    )
+                    function_info_collection.append(function_info)
 
             variable_collection = []
             use_all_variables = self.is_option_ALL("variables", module_defaults)

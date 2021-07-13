@@ -21,7 +21,6 @@ class CppWrapperGenerator(object):
         source_root,
         source_includes=None,
         wrapper_root=None,
-        castxml_binary="castxml",
         package_info_path="package_info.yaml",
     ):
 
@@ -31,7 +30,6 @@ class CppWrapperGenerator(object):
         self.source_root = os.path.realpath(source_root)
         self.source_includes = source_includes
         self.wrapper_root = wrapper_root
-        self.castxml_binary = castxml_binary
         self.package_info_path = package_info_path
         self.source_hpp_files = []
         self.global_ns = None
@@ -95,7 +93,6 @@ class CppWrapperGenerator(object):
         source_parser = CppSourceParser(
             self.source_root,
             header_collection_path,
-            self.castxml_binary,
             self.source_includes,
         )
         source_parser.parse()

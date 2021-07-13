@@ -4,17 +4,19 @@
 Parse the single header file using CastXML and pygccxml
 """
 
+import os
+
 from pygccxml import parser, declarations
+import castxml
 
 
 class CppSourceParser:
     def __init__(
-        self, source_root, wrapper_header_collection, castxml_binary, source_includes
+        self, source_root, wrapper_header_collection, source_includes
     ):
 
         self.source_root = source_root
         self.wrapper_header_collection = wrapper_header_collection
-        self.castxml_binary = castxml_binary
         self.source_includes = source_includes
         self.global_ns = None
         self.source_ns = None
@@ -22,7 +24,7 @@ class CppSourceParser:
     def parse(self):
 
         xml_generator_config = parser.xml_generator_configuration_t(
-            xml_generator_path=self.castxml_binary,
+            xml_generator_path=os.join(castxml.BIN_DIR, 'castxml'),
             xml_generator="castxml",
             cflags="-std=c++11",
             include_paths=self.source_includes,

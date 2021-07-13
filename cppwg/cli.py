@@ -23,18 +23,11 @@ def main():
         default=os.getcwd(),
     )
     parser.add_argument(
-        "--castxml_binary",
-        "-c",
-        type=str,
-        help="Path to the castxml binary.",
-        default="castxml",
-    )
-    parser.add_argument(
         "--package_info",
         "-p",
         type=str,
         help="Path to package_info.yaml",
-        default=os.join(os.getcwd(), "package_info.yaml"),
+        default=os.path.join(os.getcwd(), "package_info.yaml"),
     )
     parser.add_argument(
         "--includes",
@@ -51,7 +44,6 @@ def main():
         args.source_root,
         includes,
         args.wrapper_root,
-        args.castxml_binary,
         args.package_info,
     )
     generator.generate_wrapper()
