@@ -10,13 +10,20 @@ class CppBaseWrapperWriter(object):
     def __init__(self, wrapper_templates):
 
         self.wrapper_templates = wrapper_templates
-        self.tidy_replacements = collections.OrderedDict([(", ", "_"), ("<", "_lt_"), 
-                                                          (">", "_gt_"), ("::", "_"), 
-                                                          ("*", "Ptr"), ("&", "Ref"), 
-                                                          ("-", "neg")])
+        self.tidy_replacements = collections.OrderedDict(
+            [
+                (", ", "_"),
+                ("<", "_lt_"),
+                (">", "_gt_"),
+                ("::", "_"),
+                ("*", "Ptr"),
+                ("&", "Ref"),
+                ("-", "neg"),
+            ]
+        )
 
     def tidy_name(self, name):
-        
+
         """
         This method replaces full c++ declarations with a simple version for use
         in typedefs
@@ -27,10 +34,10 @@ class CppBaseWrapperWriter(object):
         return name.replace(" ", "")
 
     def exclusion_critera(self, decl, exclusion_args):
-        
+
         """
         Fails if any of the types in the declaration appear in the exclusion args
-        """        
+        """
 
         # Are any return types not wrappable
         return_type = decl.return_type.decl_string.replace(" ", "")

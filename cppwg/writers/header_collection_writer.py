@@ -10,7 +10,7 @@ import os
 import ntpath
 
 
-class CppHeaderCollectionWriter():
+class CppHeaderCollectionWriter:
 
     """
     This class manages generation of the header collection file for
@@ -34,7 +34,7 @@ class CppHeaderCollectionWriter():
                 self.free_func_dict[eachFuncInfo.name] = eachFuncInfo
 
     def add_custom_header_code(self):
-        
+
         """
         Any custom header code goes here
         """
@@ -46,32 +46,32 @@ class CppHeaderCollectionWriter():
         """
         The actual write
         """
-        
+
         if not os.path.exists(self.wrapper_root + "/"):
             os.makedirs(self.wrapper_root + "/")
         file_path = self.wrapper_root + "/" + self.header_file_name
-        hpp_file = open(file_path, 'w')
+        hpp_file = open(file_path, "w")
         hpp_file.write(self.hpp_string)
         hpp_file.close()
 
     def should_include_all(self):
-        
+
         """
         Return whether all source files in the module source locs should be included
-        """        
+        """
 
         for eachModule in self.package_info.module_info:
             if eachModule.use_all_classes or eachModule.use_all_free_functions:
-                    return True
+                return True
         return False
 
     def write(self):
-        
+
         """
         Main method for generating the header file output string
         """
 
-        hpp_header_dict = {'package_name': self.package_info.name}
+        hpp_header_dict = {"package_name": self.package_info.name}
         hpp_header_template = """\
 #ifndef {package_name}_HEADERS_HPP_
 #define {package_name}_HEADERS_HPP_
@@ -89,13 +89,19 @@ class CppHeaderCollectionWriter():
             for eachModule in self.package_info.module_info:
                 for eachClassInfo in eachModule.class_info:
                     if eachClassInfo.source_file is not None:
-                        self.hpp_string += '#include "' + eachClassInfo.source_file + '"\n'
+                        self.hpp_string += (
+                            '#include "' + eachClassInfo.source_file + '"\n'
+                        )
                     elif eachClassInfo.source_file_full_path is not None:
-                        include_name = ntpath.basename(eachClassInfo.source_file_full_path)
+                        include_name = ntpath.basename(
+                            eachClassInfo.source_file_full_path
+                        )
                         self.hpp_string += '#include "' + include_name + '"\n'
                 for eachFuncInfo in eachModule.free_function_info:
                     if eachFuncInfo.source_file_full_path is not None:
-                        include_name = ntpath.basename(eachFuncInfo.source_file_full_path)
+                        include_name = ntpath.basename(
+                            eachFuncInfo.source_file_full_path
+                        )
                         self.hpp_string += '#include "' + include_name + '"\n'
 
         # Add the template instantiations
@@ -107,7 +113,9 @@ class CppHeaderCollectionWriter():
                     continue
                 prefix = "template class "
                 for eachTemplateName in full_names:
-                    self.hpp_string += prefix + eachTemplateName.replace(" ","") + ";\n"
+                    self.hpp_string += (
+                        prefix + eachTemplateName.replace(" ", "") + ";\n"
+                    )
 
         # Add typdefs for nice naming
         self.hpp_string += "\n// Typedef for nicer naming\n"
@@ -117,15 +125,17 @@ class CppHeaderCollectionWriter():
                 full_names = eachClassInfo.get_full_names()
                 if len(full_names) == 1:
                     continue
-    
+
                 short_names = eachClassInfo.get_short_names()
                 for idx, eachTemplateName in enumerate(full_names):
                     short_name = short_names[idx]
-                    typdef_prefix = "typedef " + eachTemplateName.replace(" ","") + " "
+                    typdef_prefix = "typedef " + eachTemplateName.replace(" ", "") + " "
                     self.hpp_string += typdef_prefix + short_name + ";\n"
         self.hpp_string += "}\n"
 
         self.add_custom_header_code()
-        self.hpp_string += "\n#endif // {}_HEADERS_HPP_\n".format(self.package_info.name)
+        self.hpp_string += "\n#endif // {}_HEADERS_HPP_\n".format(
+            self.package_info.name
+        )
 
         self.write_file()

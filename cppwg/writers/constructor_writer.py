@@ -2,18 +2,22 @@ from pygccxml import declarations
 
 from cppwg.writers import base_writer
 
+
 class CppConsturctorWrapperWriter(base_writer.CppBaseWrapperWriter):
 
     """
     Manage addition of constructor wrapper code
     """
 
-    def __init__(self, class_info, 
-                 ctor_decl,
-                 class_decl,
-                 wrapper_templates,
-                 class_short_name=None):
-        
+    def __init__(
+        self,
+        class_info,
+        ctor_decl,
+        class_decl,
+        wrapper_templates,
+        class_short_name=None,
+    ):
+
         super(CppConsturctorWrapperWriter, self).__init__(wrapper_templates)
 
         self.class_info = class_info
@@ -27,9 +31,11 @@ class CppConsturctorWrapperWriter(base_writer.CppBaseWrapperWriter):
     def exclusion_critera(self):
 
         # Check for exclusions
-        exclusion_args = self.class_info.hierarchy_attribute_gather('calldef_excludes')
-        ctor_arg_exludes = self.class_info.hierarchy_attribute_gather('constructor_arg_type_excludes')
-            
+        exclusion_args = self.class_info.hierarchy_attribute_gather("calldef_excludes")
+        ctor_arg_exludes = self.class_info.hierarchy_attribute_gather(
+            "constructor_arg_type_excludes"
+        )
+
         for eachArg in self.ctor_decl.argument_types:
             if eachArg.decl_string.replace(" ", "") in exclusion_args:
                 return True
@@ -45,12 +51,16 @@ class CppConsturctorWrapperWriter(base_writer.CppBaseWrapperWriter):
         if self.ctor_decl.parent != self.class_decl:
             return True
 
-        if self.ctor_decl.is_artificial and declarations.is_copy_constructor(self.ctor_decl):
+        if self.ctor_decl.is_artificial and declarations.is_copy_constructor(
+            self.ctor_decl
+        ):
             return True
-        
-        if self.class_decl.is_abstract and len(self.class_decl.recursive_bases)>0:
-            if any(t.related_class.is_abstract for t in self.class_decl.recursive_bases):
-                return True        
+
+        if self.class_decl.is_abstract and len(self.class_decl.recursive_bases) > 0:
+            if any(
+                t.related_class.is_abstract for t in self.class_decl.recursive_bases
+            ):
+                return True
 
         return False
 
@@ -59,19 +69,19 @@ class CppConsturctorWrapperWriter(base_writer.CppBaseWrapperWriter):
         if self.exclusion_critera():
             return output_string
 
-        output_string += " "*8 + '.def(py::init<'
+        output_string += " " * 8 + ".def(py::init<"
         num_arg_types = len(self.ctor_decl.argument_types)
         for idx, eachArg in enumerate(self.ctor_decl.argument_types):
             output_string += eachArg.decl_string
-            if idx < num_arg_types-1:
+            if idx < num_arg_types - 1:
                 output_string += ", "
-        output_string += ' >()'
+        output_string += " >()"
 
         default_args = ""
         if not self.default_arg_exclusion_criteria():
             for eachArg in self.ctor_decl.arguments:
                 default_args += ', py::arg("{}")'.format(eachArg.name)
                 if eachArg.default_value is not None:
-                    default_args += ' = ' + eachArg.default_value
-        output_string += default_args + ')\n'
+                    default_args += " = " + eachArg.default_value
+        output_string += default_args + ")\n"
         return output_string

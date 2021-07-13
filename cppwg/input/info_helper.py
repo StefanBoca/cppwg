@@ -16,10 +16,10 @@ class CppInfoHelper(object):
     def __init__(self, module_info):
 
         self.module_info = module_info
-        
+
         self.class_dict = {}
         self.setup_class_dict()
-        
+
     def setup_class_dict(self):
 
         # For convenience collect class info in a dict keyed by name
@@ -28,8 +28,10 @@ class CppInfoHelper(object):
 
     def expand_templates(self, feature_info, feature_type):
 
-        template_substitutions = feature_info.hierarchy_attribute_gather('template_substitutions')
-        
+        template_substitutions = feature_info.hierarchy_attribute_gather(
+            "template_substitutions"
+        )
+
         if len(template_substitutions) == 0:
             return
 
@@ -47,14 +49,14 @@ class CppInfoHelper(object):
         lines = list(line for line in lines if line)
         for idx, eachLine in enumerate(lines):
             stripped_line = eachLine.replace(" ", "")
-            if idx+1 < len(lines):
-                stripped_next = lines[idx+1].replace(" ", "")
+            if idx + 1 < len(lines):
+                stripped_next = lines[idx + 1].replace(" ", "")
             else:
                 continue
 
             for idx, eachSub in enumerate(template_substitutions):
-                template_args = eachSub['replacement']
-                template_string = eachSub['signature']
+                template_args = eachSub["replacement"]
+                template_string = eachSub["signature"]
                 cleaned_string = template_string.replace(" ", "")
                 if cleaned_string in stripped_line:
                     feature_string = feature_type + feature_info.name

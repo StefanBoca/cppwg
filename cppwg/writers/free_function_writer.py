@@ -8,7 +8,7 @@ class CppFreeFunctionWrapperWriter(base_writer.CppBaseWrapperWriter):
     """
 
     def __init__(self, free_function_info, wrapper_templates):
-        
+
         super(CppFreeFunctionWrapperWriter, self).__init__(wrapper_templates)
 
         self.free_function_info = free_function_info
@@ -30,7 +30,7 @@ class CppFreeFunctionWrapperWriter(base_writer.CppBaseWrapperWriter):
         num_arg_types = len(arg_types)
         for idx, eachArg in enumerate(arg_types):
             arg_signature += eachArg.decl_string
-            if idx < num_arg_types-1:
+            if idx < num_arg_types - 1:
                 arg_signature += ", "
 
         # Default args
@@ -39,11 +39,13 @@ class CppFreeFunctionWrapperWriter(base_writer.CppBaseWrapperWriter):
             for eachArg in self.free_function_info.decl.arguments:
                 default_args += ', py::arg("{}")'.format(eachArg.name)
                 if eachArg.default_value is not None:
-                    default_args += ' = ' + eachArg.default_value
+                    default_args += " = " + eachArg.default_value
 
-        method_dict = {'def_adorn': def_adorn,
-                       'function_name': self.free_function_info.decl.name,
-                       'function_docs': '" "',
-                       'default_args': default_args}
+        method_dict = {
+            "def_adorn": def_adorn,
+            "function_name": self.free_function_info.decl.name,
+            "function_docs": '" "',
+            "default_args": default_args,
+        }
         output_string += self.wrapper_templates["free_function"].format(**method_dict)
         return output_string

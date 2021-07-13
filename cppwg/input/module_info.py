@@ -4,14 +4,15 @@ Information for individual modules
 
 from cppwg.input import base_info
 
+
 class ModuleInfo(base_info.BaseInfo):
 
     """
     Information for individual modules
     """
 
-    def __init__(self, name, type_info_dict = None):
-        
+    def __init__(self, name, type_info_dict=None):
+
         super(ModuleInfo, self).__init__(name)
 
         self.package_info = None
@@ -21,11 +22,11 @@ class ModuleInfo(base_info.BaseInfo):
         self.variable_info = []
         self.use_all_classes = False
         self.use_all_free_functions = False
-        
+
         if type_info_dict is not None:
             for key in type_info_dict:
-                setattr(self, key, type_info_dict[key])  
-                
+                setattr(self, key, type_info_dict[key])
+
     @property
     def parent(self):
         return self.package_info
